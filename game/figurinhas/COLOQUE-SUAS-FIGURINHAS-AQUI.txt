@@ -1,0 +1,11 @@
+COLOQUE SUAS FIGURINHAS NESTA PASTA.
+
+PADRÃO DO JOGO:
+001.webp
+002.webp
+003.webp
+...
+072.webp
+
+Se preferir, você também pode editar:
+figurinhas/figurinhas-config.js

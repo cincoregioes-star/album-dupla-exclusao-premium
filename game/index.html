@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Álbum Game — Match 3</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <audio id="audioFundo" src="audio/fundo.mp3" loop></audio>
+  <audio id="audioClick" src="audio/click.mp3"></audio>
+  <audio id="audioSwipe" src="audio/swipe.mp3"></audio>
+  <audio id="audioMatch" src="audio/match.mp3"></audio>
+  <audio id="audioSparkle" src="audio/sparkle.mp3"></audio>
+  <audio id="audioBomba" src="audio/bomba.mp3"></audio>
+  <audio id="audioFoguete" src="audio/foguete.mp3"></audio>
+  <audio id="audioPa" src="audio/pa.mp3"></audio>
+  <audio id="audioErro" src="audio/erro.mp3"></audio>
+  <audio id="audioVitoria" src="audio/vitoria.mp3"></audio>
+
+  <div class="pagina">
+    <header class="topbar">
+      <div>
+        <h1>Álbum Game</h1>
+        <p>Combine peças, quebre cactos e revele a figurinha mais perto do fim de cada fase.</p>
+      </div>
+      <div class="topbar-actions">
+        <button id="btnAudio" class="btn btn-dark">Ativar áudio</button>
+        <button id="btnReiniciar" class="btn btn-dark">Reiniciar jogo</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="painel painel-esquerdo">
+        <div class="placa">
+          <span class="placa-titulo">FASE</span>
+          <strong id="faseAtual">1</strong>
+        </div>
+
+        <div class="card-info">
+          <div class="linha-info"><span>Pontos</span><strong id="pontos">0</strong></div>
+          <div class="linha-info"><span>Jogadas</span><strong id="movimentos">0</strong></div>
+          <div class="linha-info"><span>Figurinha</span><strong id="figurinhaNumero">001</strong></div>
+        </div>
+
+        <div class="objetivos">
+          <h2>Objetivos</h2>
+          <div class="objetivo-item"><span>Meta de pontos</span><strong id="metaPontos">0 / 0</strong></div>
+          <div class="objetivo-item"><span>Cactos quebrados</span><strong id="metaCactos">0 / 0</strong></div>
+          <div class="objetivo-item"><span>Figurinha desvendada</span><strong id="metaFigurinha">0 / 0</strong></div>
+          <div class="barra"><div id="progresso" class="progresso"></div></div>
+          <small id="descricaoFase">Conclua os 3 objetivos para passar de fase.</small>
+        </div>
+
+        <div class="painel-preparo">
+          <h2>Tema da fase</h2>
+          <p id="temaFase">Cada fase agora tem layout próprio, fundo próprio e dificuldade própria.</p>
+        </div>
+      </aside>
+
+      <section class="centro">
+        <div class="tabuleiro-topo">
+          <h2 id="tituloFase">Fase 1</h2>
+          <p id="subtituloFase">Troque peças por clique ou arrastando um bloco por vez.</p>
+        </div>
+
+        <div id="statusBooster" class="status-booster">Nenhum booster ativo.</div>
+
+        <div class="tabuleiro-wrap">
+          <div id="tabuleiro" class="tabuleiro"></div>
+        </div>
+
+        <div class="acoes-centro">
+          <button id="btnEmbaralhar" class="btn">Embaralhar</button>
+          <button id="btnProximaFase" class="btn btn-primary" disabled>Próxima fase</button>
+        </div>
+      </section>
+
+      <aside class="painel painel-direito">
+        <div class="figurinha-box">
+          <div class="figurinha-head">
+            <h2>Figurinha sendo desvendada</h2>
+            <span id="figurinhaArquivo" class="etiqueta-arquivo">001.webp</span>
+          </div>
+          <div id="stickerPreview" class="sticker-preview sem-imagem">
+            <img id="stickerImage" alt="Figurinha" />
+            <div id="stickerFallback" class="sticker-fallback">
+              <div class="fallback-numero" id="fallbackNumero">001</div>
+              <div class="fallback-texto">FIGURINHA</div>
+            </div>
+            <div id="stickerMask" class="sticker-mask"></div>
+          </div>
+          <div class="figurinha-stats">
+            <span id="coberturaRestante">0 blocos cobrindo</span>
+            <span id="porcentagemVisivel">0% visível</span>
+          </div>
+        </div>
+
+        <h2>Boosters</h2>
+        <button id="boosterBomba" class="booster-btn">
+          <span class="booster-icone">💣</span>
+          <span class="booster-texto"><strong>Bomba</strong><small>Queima pavio e quebra área 3x3</small></span>
+          <span id="qtdBomba" class="booster-qtd">3</span>
+        </button>
+
+        <button id="boosterFoguete" class="booster-btn">
+          <span class="booster-icone">🚀</span>
+          <span class="booster-texto"><strong>Foguete</strong><small>Quebra uma linha horizontal</small></span>
+          <span id="qtdFoguete" class="booster-qtd">3</span>
+        </button>
+
+        <button id="boosterPa" class="booster-btn">
+          <span class="booster-icone">🪏</span>
+          <span class="booster-texto"><strong>Pá</strong><small>Quebra 1 bloco</small></span>
+          <span id="qtdPa" class="booster-qtd">3</span>
+        </button>
+
+        <div class="ajuda">
+          <h3>Regras</h3>
+          <ul>
+            <li>4 peças: cria <b>foguete horizontal</b>.</li>
+            <li>5 peças: cria <b>bomba</b>.</li>
+            <li>Cactos precisam de <b>3 acertos</b>.</li>
+            <li>Cada fase tem <b>layout e fundo diferentes</b>.</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="modal" class="modal escondido">
+    <div class="modal-box">
+      <h2 id="modalTitulo">Resultado</h2>
+      <p id="modalTexto"></p>
+      <div class="modal-actions">
+        <button id="btnModalPrincipal" class="btn btn-primary">Continuar</button>
+        <button id="btnModalSecundario" class="btn btn-dark escondido">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="figurinhas/figurinhas-config.js"></script>
+  <script src="script.js"></script>
+<button onclick="window.location.href='../index.html'" style="position:fixed;left:12px;top:12px;z-index:9999;border:0;border-radius:999px;padding:10px 14px;background:#facc15;color:#111827;font-weight:900;">Retornar ao álbum</button>
+</body>
+</html>

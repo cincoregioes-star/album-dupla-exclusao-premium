@@ -1,0 +1,29 @@
+CHECKLIST DA FEIRA
+
+ANTES:
+[ ] Testar QR Code do projeto
+[ ] Testar QR Code do álbum
+[ ] Testar QR Code do game
+[ ] Conferir internet ou dados móveis
+[ ] Deixar álbum A3 aberto na mesa
+[ ] Separar 10 álbuns A4
+[ ] Separar 10 envelopes com 36 figurinhas
+[ ] Conferir painel de concluintes
+[ ] Deixar caneta na mesa
+[ ] Abrir o álbum em celular ou notebook
+
+DURANTE:
+[ ] Explicar o tema dupla exclusão
+[ ] Mostrar a amostra A3
+[ ] Orientar o público a acessar QR Code
+[ ] Ajudar visitantes a completar o álbum digital
+[ ] Conferir tela de conclusão
+[ ] Verificar posição no painel de concluintes
+[ ] Entregar álbum A4 aos 10 primeiros
+[ ] Marcar prêmio entregue
+
+DEPOIS:
+[ ] Exportar CSV dos concluintes
+[ ] Conferir registros no Supabase
+[ ] Fotografar mesa e alunos
+[ ] Guardar lista de premiados
