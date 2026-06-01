@@ -361,66 +361,175 @@ function abrirFicha(num){
   </div>`);
 }
 
-const QUESTOES_ANTERIOR = [
-["O que é capacitismo?",["Tratar pessoas com deficiência como incapazes ou inferiores","Apenas construir rampas","Uma disciplina escolar","Um tipo de esporte"],0],
-["O que é racismo estrutural?",["Desigualdade presente nas estruturas sociais","Uma opinião individual sem efeitos","Uma brincadeira sem consequência","Um conteúdo de matemática"],0],
-["A ficha técnica deve ser liberada quando?",["Depois que a figurinha for colada","Assim que abrir o site","Antes de ganhar a figurinha","Nunca"],0],
-["Qual atitude ajuda a inclusão escolar?",["Adaptar materiais e respeitar diferentes formas de aprender","Isolar o estudante","Ignorar Libras","Impedir participação"],0],
-["Quando um aluno surdo não tem acessibilidade comunicacional, falta:",["Direito à comunicação","Uniforme escolar","Prova difícil","Recreio"],0],
-["Bullying contra deficiência e raça deve ser tratado como:",["Problema sério de discriminação","Brincadeira normal","Assunto sem importância","Competição"],0],
-["A escola inclusiva deve garantir:",["Acessibilidade, respeito e pertencimento","Apenas notas altas","Silêncio absoluto","Separação dos alunos"],0],
-["Representatividade significa:",["Ver diferentes pessoas valorizadas nos espaços","Excluir histórias diversas","Mostrar apenas um grupo","Evitar debates"],0],
-["A família e a escola devem:",["Dialogar em parceria pelo direito do estudante","Culpar o aluno","Evitar adaptações","Esconder dificuldades"],0],
-["Combater racismo e capacitismo é responsabilidade:",["De toda a comunidade escolar","Somente do aluno","Somente da família","De ninguém"],0]
+
+const SIMULADOS_TEMA = [
+  {
+    titulo:"Simulado 1 — Conceitos Básicos",
+    perguntas:[
+      ["O que é capacitismo?",["Tratar pessoas com deficiência como incapazes ou inferiores","Apenas construir rampas","Uma disciplina escolar","Um tipo de esporte"],0],
+      ["O que é racismo estrutural?",["Desigualdade presente nas estruturas sociais","Uma opinião individual sem efeitos","Uma brincadeira sem consequência","Um conteúdo de matemática"],0],
+      ["Dupla exclusão acontece quando:",["A pessoa sofre mais de uma forma de discriminação ao mesmo tempo","A escola realiza uma festa","O aluno ganha material escolar","A turma muda de sala"],0],
+      ["A inclusão escolar deve garantir:",["Acessibilidade, respeito e pertencimento","Separação dos alunos","Silêncio absoluto","Apenas notas altas"],0],
+      ["Acessibilidade é:",["Direito","Favor","Prêmio","Castigo"],0],
+      ["Racismo pode aparecer na escola por meio de:",["Apelidos, exclusões e baixa expectativa","Somente provas difíceis","Apenas uniforme","Somente horário de recreio"],0],
+      ["Capacitismo acontece quando:",["A pessoa com deficiência é tratada como incapaz","A escola adapta material","Há respeito à autonomia","Todos participam"],0],
+      ["Representatividade significa:",["Ver diferentes pessoas valorizadas nos espaços","Apagar histórias diversas","Mostrar apenas um grupo","Evitar debates"],0],
+      ["O projeto do álbum busca:",["Ensinar inclusão de forma interativa","Substituir todos os professores","Evitar o tema","Apenas colecionar imagens"],0],
+      ["Combater discriminação é responsabilidade:",["De toda a comunidade escolar","Somente do aluno","Somente da família","De ninguém"],0]
+    ]
+  },
+  {
+    titulo:"Simulado 2 — Racismo no Ambiente Escolar",
+    perguntas:[
+      ["Uma escola antirracista deve:",["Reconhecer e combater práticas racistas","Ignorar apelidos","Evitar representatividade","Culpar a vítima"],0],
+      ["Baixa expectativa sobre alunos negros pode causar:",["Limitação de oportunidades e desvalorização","Mais inclusão","Mais autonomia","Acesso garantido"],0],
+      ["Silenciar um estudante significa:",["Impedir sua voz e participação","Valorizar sua opinião","Garantir escuta","Promover respeito"],0],
+      ["Representatividade contribui para:",["Pertencimento e autoestima","Exclusão","Silenciamento","Separação"],0],
+      ["Preconceito racial pode aparecer em:",["Piadas, olhares, falas e oportunidades negadas","Somente livros","Apenas fora da escola","Nunca aparece"],0],
+      ["A Lei e a educação devem defender:",["Igualdade, respeito e dignidade","Exclusão","Discriminação","Separação"],0],
+      ["Uma atitude correta diante de racismo é:",["Denunciar, acolher e orientar","Rir da situação","Ignorar","Culpar quem sofreu"],0],
+      ["A escola deve trabalhar a história negra para:",["Valorizar identidades e combater preconceitos","Reforçar estereótipos","Evitar debate","Diminuir participação"],0],
+      ["O racismo estrutural é grave porque:",["Está presente em práticas, instituições e oportunidades","É apenas brincadeira","Não causa efeitos","Só existe no passado"],0],
+      ["Combater o racismo na escola exige:",["Ações permanentes e compromisso coletivo","Apenas uma palestra isolada","Silêncio","Separar estudantes"],0]
+    ]
+  },
+  {
+    titulo:"Simulado 3 — Capacitismo e Acessibilidade",
+    perguntas:[
+      ["Acessibilidade comunicacional inclui:",["Libras, recursos visuais e formas adequadas de comunicação","Somente rampas","Somente uniforme","Apenas provas"],0],
+      ["Tecnologia assistiva serve para:",["Ampliar autonomia e participação","Substituir o professor","Separar estudantes","Dar vantagem injusta"],0],
+      ["Material adaptado deve:",["Apoiar a aprendizagem","Diminuir o estudante","Facilitar sem objetivo","Isolar o aluno"],0],
+      ["Mobilidade na escola envolve:",["Rampas, caminhos acessíveis e segurança","Somente recreio","Somente pintura","Somente uniforme"],0],
+      ["Autonomia significa:",["Apoiar sem controlar a pessoa","Fazer tudo pelo aluno","Ignorar necessidades","Impedir escolhas"],0],
+      ["Inclusão verdadeira ocorre quando:",["Todos participam com dignidade","O aluno fica separado","Só alguns aprendem","Não há adaptação"],0],
+      ["Tratar pessoa com deficiência como incapaz é:",["Capacitismo","Acessibilidade","Representatividade","Cuidado correto"],0],
+      ["Barreiras podem ser:",["Físicas, comunicacionais, pedagógicas e atitudinais","Apenas paredes","Somente tarefas","Apenas recreio"],0],
+      ["A escola inclusiva precisa:",["Remover barreiras e garantir pertencimento","Evitar adaptações","Isolar estudantes","Ignorar famílias"],0],
+      ["Libras é importante porque:",["Garante comunicação e participação de pessoas surdas","Serve para separar estudantes","Impede aprendizagem","Substitui todo conteúdo"],0]
+    ]
+  },
+  {
+    titulo:"Simulado 4 — Família, Escola e Comunidade",
+    perguntas:[
+      ["Família e escola devem:",["Dialogar em parceria pelo direito do estudante","Culpar o aluno","Evitar adaptações","Esconder dificuldades"],0],
+      ["O conselho escolar pode ajudar:",["Debatendo direitos, inclusão e participação","Cancelando aulas","Separando alunos","Evitando família"],0],
+      ["Professor mediador deve:",["Escutar, orientar e transformar conflitos em aprendizagem","Expor o aluno","Ignorar conflitos","Reforçar preconceitos"],0],
+      ["Gestão comprometida deve:",["Planejar inclusão e acompanhar barreiras","Evitar diálogo","Separar estudantes","Ignorar acessibilidade"],0],
+      ["Colegas aliados são importantes porque:",["Acolhem e combatem exclusões","Riem do colega","Reforçam apelidos","Isolam estudantes"],0],
+      ["Comunidade escolar inclui:",["Alunos, famílias, professores, gestão e comunidade","Somente direção","Apenas visitantes","Só professores"],0],
+      ["Rede de apoio serve para:",["Garantir pertencimento e participação","Transferir culpa","Evitar adaptação","Impedir participação"],0],
+      ["A gestão deve acompanhar:",["Resultados, barreiras e ações inclusivas","Apenas decoração","Somente uniforme","Nada"],0],
+      ["A família presente ajuda quando:",["Participa do diálogo e acompanha a aprendizagem","Culpa a escola sem conversar","Evita reuniões","Impede adaptações"],0],
+      ["A inclusão depende de:",["Compromisso coletivo","Apenas sorte","Isolamento","Silêncio"],0]
+    ]
+  },
+  {
+    titulo:"Simulado 5 — Compromisso Coletivo",
+    perguntas:[
+      ["Bullying contra raça ou deficiência deve ser tratado como:",["Discriminação séria","Brincadeira normal","Competição","Assunto sem importância"],0],
+      ["Denunciar discriminação ajuda a:",["Proteger direitos","Criar fofoca","Evitar diálogo","Punir sem ouvir"],0],
+      ["Respeito às diferenças fortalece:",["Convivência e pertencimento","Exclusão","Silêncio","Preconceito"],0],
+      ["Protagonismo estudantil significa:",["Alunos participando e transformando a realidade","Alunos calados","Só professor fala","Evitar projetos"],0],
+      ["Uma escola que inclui remove:",["Barreiras","Direitos","Acessibilidade","Participação"],0],
+      ["Uma cidade que respeita valoriza:",["As diferenças e a dignidade humana","A exclusão","O preconceito","A desigualdade"],0],
+      ["Completar o álbum representa:",["Concluir uma jornada de aprendizagem sobre inclusão","Ganhar sem aprender","Evitar o tema","Apagar o projeto"],0],
+      ["O game no álbum deve servir para:",["Estimular participação e aprendizagem","Substituir o tema","Evitar reflexão","Impedir acesso"],0],
+      ["Os 10 primeiros concluintes podem receber:",["Álbum impresso A4 e figurinhas pequenas","Advertência","Prova extra","Nada"],0],
+      ["O compromisso final do projeto é combater:",["Racismo, capacitismo e exclusões","Acessibilidade","Respeito","Inclusão"],0]
+    ]
+  }
 ];
-let respostasQuizAnterior = {};
+
+let simuladoAtual = null;
+let respostasSimuladoAtual = {};
+
 function renderSimulados(){
+  respostasSimuladoAtual = {};
+  simuladoAtual = null;
   const area = document.getElementById("simuladosArea");
-  respostasQuizAnterior = {};
-  area.innerHTML = `<div class="quiz-card quiz-card-unico">
-    <h3>Simulado do Tema</h3>
-    <p>10 questões. Gabaritou: 3 pacotes. Até 9 acertos: 1 pacote.</p>
-    <button class="btn" onclick="iniciarSimuladoAnterior()">Iniciar simulado</button>
-  </div>`;
-}
-function iniciarSimuladoAnterior(){
-  respostasQuizAnterior = {};
-  renderPerguntasSimuladoAnterior();
-}
-function renderPerguntasSimuladoAnterior(){
-  const area = document.getElementById("simuladosArea");
-  area.innerHTML = QUESTOES_ANTERIOR.map((q,i)=>`
-    <div class="pergunta-box">
-      <p><b>${i+1}. ${q[0]}</b></p>
-      ${q[1].map((op,j)=>`<button class="opcao ${respostasQuizAnterior[i]===j?'selecionada':''}" onclick="marcarRespostaAnterior(${i},${j})">${"ABCD"[j]}) ${op}</button>`).join("")}
+  area.innerHTML = SIMULADOS_TEMA.map((s,i)=>`
+    <div class="quiz-card quiz-card-unico">
+      <h3>${s.titulo}</h3>
+      <p>10 questões. Acertou as 10: ganha <b>1 pacote</b>. Errou qualquer uma: ganha <b>1 figurinha</b>.</p>
+      <button class="btn" onclick="iniciarSimuladoTema(${i})">Responder</button>
     </div>
-  `).join("") + `<button class="btn btn-finalizar-quiz" onclick="finalizarQuizAnterior()">Finalizar simulado</button>`;
+  `).join("");
 }
-function marcarRespostaAnterior(i,j){
-  respostasQuizAnterior[i]=j;
-  renderPerguntasSimuladoAnterior();
+
+function iniciarSimuladoTema(indice){
+  simuladoAtual = SIMULADOS_TEMA[indice];
+  respostasSimuladoAtual = {};
+  renderPerguntasSimuladoTema();
 }
-function finalizarQuizAnterior(){
-  if(Object.keys(respostasQuizAnterior).length < QUESTOES_ANTERIOR.length){
+
+function renderPerguntasSimuladoTema(){
+  const area = document.getElementById("simuladosArea");
+  area.innerHTML = `
+    <div class="quiz-card quiz-card-unico">
+      <h3>${simuladoAtual.titulo}</h3>
+      <p>Marque uma alternativa em cada questão.</p>
+    </div>
+    ${simuladoAtual.perguntas.map((q,i)=>`
+      <div class="pergunta-box">
+        <p><b>${i+1}. ${q[0]}</b></p>
+        ${q[1].map((op,j)=>`<button class="opcao ${respostasSimuladoAtual[i]===j?'selecionada':''}" onclick="marcarRespostaSimuladoTema(${i},${j})">${"ABCD"[j]}) ${op}</button>`).join("")}
+      </div>
+    `).join("")}
+    <button class="btn btn-finalizar-quiz" onclick="finalizarSimuladoTema()">Finalizar simulado</button>
+  `;
+}
+
+function marcarRespostaSimuladoTema(i,j){
+  respostasSimuladoAtual[i]=j;
+  renderPerguntasSimuladoTema();
+}
+
+function finalizarSimuladoTema(){
+  if(!simuladoAtual) return;
+  if(Object.keys(respostasSimuladoAtual).length < simuladoAtual.perguntas.length){
     alert("Responda todas as 10 questões.");
     return;
   }
+
   let acertos = 0;
-  QUESTOES_ANTERIOR.forEach((q,i)=>{ if(respostasQuizAnterior[i] === q[2]) acertos++; });
-  const ganho = acertos === 10 ? 3 : 1;
-  estado.pacotes = Number(estado.pacotes || 0) + ganho;
+  simuladoAtual.perguntas.forEach((q,i)=>{ if(respostasSimuladoAtual[i] === q[2]) acertos++; });
+
   estado.historico = estado.historico || [];
-  estado.historico.push({tipo:"simulado", acertos, pacotes:ganho, data:new Date().toISOString()});
-  salvar();
-  atualizarStatus();
-  const area = document.getElementById("simuladosArea");
-  area.innerHTML = `<div class="quiz-card quiz-card-unico">
-    <h3>Resultado: ${acertos}/10</h3>
-    <p>Você ganhou <b>${ganho} pacote(s)</b>. Agora abra pacotes e cole as figurinhas manualmente no álbum.</p>
-    <button class="btn" onclick="abrirPacote()">Abrir pacote</button>
-    <button class="btn" onclick="renderSimulados()">Responder novamente</button>
-  </div>`;
+
+  if(acertos === 10){
+    estado.pacotes = Number(estado.pacotes || 0) + 1;
+    estado.historico.push({tipo:"simulado", titulo:simuladoAtual.titulo, acertos, premio:"1 pacote", data:new Date().toISOString()});
+    salvar();
+    atualizarStatus();
+    document.getElementById("simuladosArea").innerHTML = `<div class="quiz-card quiz-card-unico">
+      <h3>Resultado: ${acertos}/10</h3>
+      <p>Parabéns! Você acertou tudo e ganhou <b>1 pacote</b>.</p>
+      <button class="btn" onclick="abrirPacote()">Abrir pacote</button>
+      <button class="btn" onclick="renderSimulados()">Voltar aos simulados</button>
+    </div>`;
+  }else{
+    const n = liberarFigurinha("simulado");
+    const f = FIGURINHAS.find(x => x.numero === n);
+    estado.historico.push({tipo:"simulado", titulo:simuladoAtual.titulo, acertos, premio:"1 figurinha", numero:n, data:new Date().toISOString()});
+    salvar();
+    atualizarStatus();
+    document.getElementById("simuladosArea").innerHTML = `<div class="quiz-card quiz-card-unico">
+      <h3>Resultado: ${acertos}/10</h3>
+      <p>Você não acertou as 10, mas ganhou <b>1 figurinha</b> para continuar participando.</p>
+      <div class="premio-simulado-figurinha">
+        <img src="${caminhoFigurinha(f)}" alt="Figurinha ${String(n).padStart(2,'0')}">
+        <div>
+          <strong>Figurinha ${String(n).padStart(2,'0')}</strong>
+          <span>${f ? f.titulo : "Dupla Exclusão"}</span>
+          <small>Ela foi enviada para o álbum. Vá ao álbum e clique em colar.</small>
+        </div>
+      </div>
+      <button class="btn" onclick="abrirTela('album')">Ir para o álbum</button>
+      <button class="btn" onclick="renderSimulados()">Responder outro simulado</button>
+    </div>`;
+  }
 }
+
 
 function iniciarDesafio(){
   const perguntas = [
