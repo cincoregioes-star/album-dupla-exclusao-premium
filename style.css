@@ -2499,3 +2499,29 @@ nav button{
     max-height:164px!important;
   }
 }
+
+
+/* ===== MOBILE: gesto lateral para mudar página ===== */
+@media (max-width:760px){
+  #albumPages{
+    touch-action: pan-y!important;
+    overscroll-behavior-x: contain!important;
+  }
+
+  .pagina.pagina-tres{
+    user-select:none!important;
+    -webkit-user-select:none!important;
+  }
+
+  .painel::after{
+    content:"Arraste para o lado para mudar de página";
+    grid-column:1 / -1;
+    display:block;
+    text-align:center;
+    color:#facc15;
+    font-size:.68rem;
+    font-weight:800;
+    opacity:.85;
+    margin-top:2px;
+  }
+}

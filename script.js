@@ -135,7 +135,7 @@ function irInicioAlbum(){
 function abrirTela(nome){
   document.querySelectorAll(".tela").forEach(t=>t.classList.remove("ativa"));
   document.getElementById("tela-"+nome).classList.add("ativa");
-  if(nome==="album") renderAlbum();
+  if(nome==="album"){ renderAlbum(); setTimeout(ativarSwipeMobileAlbum, 50); }
   if(nome==="simulados") renderSimulados();
   if(nome==="admin") carregarConcluintes();
 }
@@ -627,8 +627,67 @@ function confirmarReinicio(){
 }
 function modal(html){document.getElementById("modalConteudo").innerHTML=html;document.getElementById("modal").classList.remove("oculto")}
 function fecharModal(){document.getElementById("modal").classList.add("oculto")}
+
+/* ===== MOBILE: ARRASTAR PARA VIRAR PÁGINA ===== */
+let touchAlbumInicioX = 0;
+let touchAlbumInicioY = 0;
+let touchAlbumFimX = 0;
+let touchAlbumFimY = 0;
+let touchAlbumAtivo = false;
+
+function iniciarSwipeAlbum(e){
+  if(!window.matchMedia("(max-width: 760px)").matches) return;
+  const telaAlbum = document.getElementById("tela-album");
+  if(!telaAlbum || !telaAlbum.classList.contains("ativa")) return;
+
+  const toque = e.changedTouches ? e.changedTouches[0] : e;
+  touchAlbumInicioX = toque.clientX;
+  touchAlbumInicioY = toque.clientY;
+  touchAlbumFimX = toque.clientX;
+  touchAlbumFimY = toque.clientY;
+  touchAlbumAtivo = true;
+}
+
+function moverSwipeAlbum(e){
+  if(!touchAlbumAtivo) return;
+  const toque = e.changedTouches ? e.changedTouches[0] : e;
+  touchAlbumFimX = toque.clientX;
+  touchAlbumFimY = toque.clientY;
+}
+
+function finalizarSwipeAlbum(e){
+  if(!touchAlbumAtivo) return;
+  touchAlbumAtivo = false;
+
+  const deltaX = touchAlbumFimX - touchAlbumInicioX;
+  const deltaY = touchAlbumFimY - touchAlbumInicioY;
+
+  // Evita trocar página quando o usuário estiver rolando para cima/baixo
+  if(Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+  // distância mínima do gesto
+  if(Math.abs(deltaX) < 55) return;
+
+  if(deltaX < 0){
+    proximaPagina();
+  }else{
+    paginaAnterior();
+  }
+}
+
+function ativarSwipeMobileAlbum(){
+  const area = document.getElementById("albumPages");
+  if(!area || area.dataset.swipeAtivo === "1") return;
+
+  area.dataset.swipeAtivo = "1";
+  area.addEventListener("touchstart", iniciarSwipeAlbum, {passive:true});
+  area.addEventListener("touchmove", moverSwipeAlbum, {passive:true});
+  area.addEventListener("touchend", finalizarSwipeAlbum, {passive:true});
+}
+
 function init(){
   atualizarStatus();
+  ativarSwipeMobileAlbum();
   atualizarBotaoSom();
   abrirTela("projeto");
 }
