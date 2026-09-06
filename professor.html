@@ -38,11 +38,12 @@
     <section id="loginCard" class="prof-card">
       <h2>Acesso restrito</h2>
       <p class="muted">Use o e-mail e a senha cadastrados no Supabase para a equipe pedagógica.</p>
-      <div class="login-grid">
-        <input id="email" type="email" placeholder="E-mail">
-        <input id="senha" type="password" placeholder="Senha">
-        <button class="btn-primary" onclick="entrar()">Entrar</button>
-      </div>
+      <form id="loginForm" class="login-grid" onsubmit="entrar(event)">
+        <input id="email" name="username" type="email" autocomplete="username" placeholder="E-mail" required>
+        <input id="senha" name="password" type="password" autocomplete="current-password" placeholder="Senha" required>
+        <button class="btn-primary" type="submit">Entrar</button>
+      </form>
+      <p class="muted"><small>Após um login válido, o Chrome/Edge pode oferecer salvar a senha neste navegador. A sessão também permanece ativa neste aparelho até você sair ou o login expirar.</small></p>
       <p id="loginMsg" class="muted"></p>
     </section>
 
@@ -92,7 +93,8 @@ function authH(){return {...h(),Authorization:`Bearer ${sessao.access_token}`}}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function fmtData(v){try{return new Date(v).toLocaleString('pt-BR')}catch(e){return ''}}
 
-async function entrar(){
+async function entrar(ev){
+ if(ev) ev.preventDefault();
  const email=document.getElementById('email').value.trim(), password=document.getElementById('senha').value;
  const msg=document.getElementById('loginMsg'); msg.textContent='Entrando...';
  try{
