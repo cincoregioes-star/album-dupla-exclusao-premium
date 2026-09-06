@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dupla Exclusão — Painel dos Professores</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body{background:#07111f;color:#eef6ff;font-family:Arial,sans-serif;margin:0}
+    .prof-wrap{max-width:1180px;margin:auto;padding:24px}
+    .prof-top{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:22px}
+    .prof-top h1{margin:0;font-size:clamp(1.6rem,4vw,2.4rem)}
+    .prof-card{background:#0e1d31;border:1px solid #24415e;border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 12px 30px rgba(0,0,0,.22)}
+    .prof-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .metric{background:#112941;border-radius:14px;padding:16px;border:1px solid #2b526f}
+    .metric b{display:block;font-size:1.75rem;margin-top:6px}
+    .login-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
+    input,select{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid #38546f;background:#081522;color:#fff}
+    button{border:0;border-radius:10px;padding:11px 14px;font-weight:700;cursor:pointer}
+    .btn-primary{background:#22c55e;color:#06220f}.btn-ghost{background:#16314b;color:#fff}.btn-danger{background:#7f1d1d;color:#fff}
+    .table-wrap{overflow:auto}.prof-table{width:100%;border-collapse:collapse;min-width:820px}.prof-table th,.prof-table td{padding:11px;border-bottom:1px solid #29455e;text-align:left;vertical-align:top}.prof-table th{background:#0a1726;position:sticky;top:0}
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#16314b;font-size:.78rem}.ok{background:#14532d}.warn{background:#78350f}
+    .muted{opacity:.72}.hidden{display:none!important}.filters{display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:10px;margin-bottom:14px}
+    @media(max-width:800px){.prof-grid{grid-template-columns:1fr 1fr}.login-grid,.filters{grid-template-columns:1fr}.prof-wrap{padding:14px}}
+  </style>
+</head>
+<body>
+  <main class="prof-wrap">
+    <div class="prof-top">
+      <div>
+        <div class="pill">Dupla Exclusão</div>
+        <h1>Painel dos Professores</h1>
+        <div class="muted">Acompanhamento de progresso, simulados e concluintes.</div>
+      </div>
+      <button class="btn-ghost" onclick="location.href='index.html'">← Voltar ao álbum</button>
+    </div>
+
+    <section id="loginCard" class="prof-card">
+      <h2>Acesso restrito</h2>
+      <p class="muted">Use o e-mail e a senha cadastrados no Supabase para a equipe pedagógica.</p>
+      <div class="login-grid">
+        <input id="email" type="email" placeholder="E-mail">
+        <input id="senha" type="password" placeholder="Senha">
+        <button class="btn-primary" onclick="entrar()">Entrar</button>
+      </div>
+      <p id="loginMsg" class="muted"></p>
+    </section>
+
+    <section id="painel" class="hidden">
+      <div class="prof-card prof-top">
+        <div><b id="usuarioNome">Professor</b><div id="usuarioPerfil" class="muted"></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn-ghost" onclick="carregarTudo()">Atualizar</button><button class="btn-danger" onclick="sair()">Sair</button></div>
+      </div>
+
+      <div class="prof-grid">
+        <div class="metric">Alunos monitorados<b id="mAlunos">0</b></div>
+        <div class="metric">Registros de simulados<b id="mSimulados">0</b></div>
+        <div class="metric">Álbuns concluídos<b id="mConcluidos">0</b></div>
+        <div class="metric">Média de acertos<b id="mMedia">0,0</b></div>
+      </div>
+
+      <section class="prof-card">
+        <h2>Visão por aluno</h2>
+        <div class="filters">
+          <input id="fBusca" placeholder="Buscar aluno" oninput="renderAlunos()">
+          <input id="fTurma" placeholder="Filtrar turma" oninput="renderAlunos()">
+          <select id="fSituacao" onchange="renderAlunos()"><option value="">Todas as situações</option><option value="completo">Álbum completo</option><option value="andamento">Em andamento</option></select>
+          <button class="btn-ghost" onclick="exportarCSV()">Exportar CSV</button>
+        </div>
+        <div class="table-wrap"><table class="prof-table"><thead><tr><th>Aluno</th><th>Turma</th><th>Figurinhas</th><th>Simulados</th><th>Último resultado</th><th>Status</th></tr></thead><tbody id="tbAlunos"></tbody></table></div>
+      </section>
+
+      <section class="prof-card">
+        <h2>Concluintes</h2>
+        <div class="table-wrap"><table class="prof-table"><thead><tr><th>Posição</th><th>Aluno</th><th>Escola/Turma</th><th>Código</th><th>Data</th><th>Prêmio</th></tr></thead><tbody id="tbConcluintes"></tbody></table></div>
+      </section>
+
+      <section class="prof-card">
+        <h2>Resultados dos simulados</h2>
+        <div class="table-wrap"><table class="prof-table"><thead><tr><th>Aluno</th><th>Turma</th><th>Simulado</th><th>Acertos</th><th>Data</th></tr></thead><tbody id="tbSimulados"></tbody></table></div>
+      </section>
+    </section>
+  </main>
+<script src="supabase-config.js"></script>
+<script>
+const CFG=window.SUPABASE_CONFIG;
+const SESSION_KEY='dupla_prof_session_v12';
+let sessao=null, progresso=[], simulados=[], concluintes=[];
+
+function h(){return {apikey:CFG.publishableKey,'Content-Type':'application/json'}}
+function authH(){return {...h(),Authorization:`Bearer ${sessao.access_token}`}}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmtData(v){try{return new Date(v).toLocaleString('pt-BR')}catch(e){return ''}}
+
+async function entrar(){
+ const email=document.getElementById('email').value.trim(), password=document.getElementById('senha').value;
+ const msg=document.getElementById('loginMsg'); msg.textContent='Entrando...';
+ try{
+   const r=await fetch(`${CFG.url}/auth/v1/token?grant_type=password`,{method:'POST',headers:h(),body:JSON.stringify({email,password})});
+   if(!r.ok) throw new Error('E-mail ou senha inválidos.');
+   const s=await r.json(); sessao={access_token:s.access_token,refresh_token:s.refresh_token,user:s.user,expires_at:Math.floor(Date.now()/1000)+Number(s.expires_in||3600)};
+   localStorage.setItem(SESSION_KEY,JSON.stringify(sessao));
+   await validarAcesso();
+ }catch(e){msg.textContent=e.message||'Não foi possível entrar.'}
+}
+
+async function renovar(){
+ if(!sessao?.refresh_token) return false;
+ const r=await fetch(`${CFG.url}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:h(),body:JSON.stringify({refresh_token:sessao.refresh_token})});
+ if(!r.ok) return false;
+ const s=await r.json(); sessao={access_token:s.access_token,refresh_token:s.refresh_token,user:s.user,expires_at:Math.floor(Date.now()/1000)+Number(s.expires_in||3600)}; localStorage.setItem(SESSION_KEY,JSON.stringify(sessao)); return true;
+}
+
+async function validarAcesso(){
+ if(sessao?.expires_at && sessao.expires_at-Date.now()/1000<90) await renovar();
+ const r=await fetch(`${CFG.url}/rest/v1/dupla_professores?select=user_id,nome,perfil,ativo&user_id=eq.${encodeURIComponent(sessao.user.id)}`,{headers:authH()});
+ if(!r.ok) throw new Error('Falha ao validar o acesso.');
+ const rows=await r.json();
+ if(!rows.length||!rows[0].ativo){sair();throw new Error('Este usuário não está autorizado neste projeto.');}
+ document.getElementById('usuarioNome').textContent=rows[0].nome;
+ document.getElementById('usuarioPerfil').textContent=rows[0].perfil;
+ document.getElementById('loginCard').classList.add('hidden'); document.getElementById('painel').classList.remove('hidden');
+ await carregarTudo();
+}
+
+async function rest(tabela,query=''){
+ if(sessao?.expires_at && sessao.expires_at-Date.now()/1000<90) await renovar();
+ const r=await fetch(`${CFG.url}/rest/v1/${tabela}?${query}`,{headers:authH()});
+ if(r.status===401 && await renovar()) return rest(tabela,query);
+ if(!r.ok) throw new Error(await r.text());
+ return r.json();
+}
+
+async function carregarTudo(){
+ try{
+  [progresso,simulados,concluintes]=await Promise.all([
+   rest('dupla_progresso','select=*&order=created_at.desc&limit=5000'),
+   rest('dupla_simulados_resultados','select=*&order=created_at.desc&limit=5000'),
+   rest('album_concluintes','select=*&order=created_at.asc&limit=5000')
+  ]);
+  renderMetricas();renderAlunos();renderConcluintes();renderSimulados();
+ }catch(e){alert('Erro ao carregar painel: '+e.message)}
+}
+
+function latestByDevice(){const m=new Map();for(const r of progresso){if(!m.has(r.device_id))m.set(r.device_id,r)}return [...m.values()]}
+function renderMetricas(){
+ const alunos=latestByDevice(); const soma=simulados.reduce((a,b)=>a+Number(b.acertos||0),0);
+ document.getElementById('mAlunos').textContent=alunos.length;
+ document.getElementById('mSimulados').textContent=simulados.length;
+ document.getElementById('mConcluidos').textContent=concluintes.length;
+ document.getElementById('mMedia').textContent=(simulados.length?soma/simulados.length:0).toFixed(1).replace('.',',');
+}
+function renderAlunos(){
+ let rows=latestByDevice(); const q=document.getElementById('fBusca').value.toLowerCase(), t=document.getElementById('fTurma').value.toLowerCase(), s=document.getElementById('fSituacao').value;
+ rows=rows.filter(r=>(!q||String(r.nome||'').toLowerCase().includes(q))&&(!t||String(r.turma||'').toLowerCase().includes(t))&&(!s||(s==='completo'?r.album_completo:!r.album_completo)));
+ document.getElementById('tbAlunos').innerHTML=rows.map(r=>`<tr><td><b>${esc(r.nome||'Não identificado')}</b><br><span class="muted">${esc(r.escola_bairro||'')}</span></td><td>${esc(r.turma||'')}</td><td>${r.figurinhas_coladas}/36</td><td>${r.simulados_concluidos}</td><td>${esc(r.ultimo_simulado||'—')}<br><span class="muted">${r.ultimo_acertos==null?'':r.ultimo_acertos+'/10'}</span></td><td><span class="pill ${r.album_completo?'ok':'warn'}">${r.album_completo?'Completo':'Em andamento'}</span></td></tr>`).join('')||'<tr><td colspan="6">Nenhum registro.</td></tr>';
+}
+function renderConcluintes(){
+ document.getElementById('tbConcluintes').innerHTML=concluintes.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc(r.nome)}</b></td><td>${esc(r.escola_bairro||'')}</td><td>${esc(r.codigo_confirmacao)}</td><td>${fmtData(r.created_at)}</td><td>${r.premio_entregue?'<span class="pill ok">Entregue</span>':`<button class="btn-primary" onclick="marcarPremio('${r.id}')">Marcar entregue</button>`}</td></tr>`).join('')||'<tr><td colspan="6">Nenhum concluinte.</td></tr>';
+}
+function renderSimulados(){
+ document.getElementById('tbSimulados').innerHTML=simulados.slice(0,300).map(r=>`<tr><td>${esc(r.nome||'Não identificado')}</td><td>${esc(r.turma||'')}</td><td>${esc(r.simulado)}</td><td><b>${r.acertos}/${r.total}</b></td><td>${fmtData(r.created_at)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum resultado.</td></tr>';
+}
+async function marcarPremio(id){
+ if(!confirm('Confirmar entrega do prêmio?')) return;
+ const r=await fetch(`${CFG.url}/rest/v1/album_concluintes?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',headers:{...authH(),Prefer:'return=minimal'},body:JSON.stringify({premio_entregue:true,updated_at:new Date().toISOString()})});
+ if(!r.ok){alert('Não foi possível atualizar.');return;} await carregarTudo();
+}
+function exportarCSV(){
+ const rows=latestByDevice(); const head=['nome','escola','turma','figurinhas','simulados','ultimo_simulado','ultimo_acertos','album_completo'];
+ const csv=[head.join(',')].concat(rows.map(r=>[r.nome,r.escola_bairro,r.turma,r.figurinhas_coladas,r.simulados_concluidos,r.ultimo_simulado,r.ultimo_acertos,r.album_completo].map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','))).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download='dupla-exclusao-alunos.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function sair(){localStorage.removeItem(SESSION_KEY);sessao=null;document.getElementById('painel').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden');document.getElementById('loginMsg').textContent='';}
+(async function(){try{sessao=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(sessao?.access_token&&sessao?.user)await validarAcesso();}catch(e){sair();}})();
+</script>
+</body>
+</html>
