@@ -22,7 +22,7 @@ window.SUPABASE_CONFIG = {
 
   function deviceId(){
     let id=localStorage.getItem(DEVICE_KEY);
-    if(!id){id=(crypto?.randomUUID?crypto.randomUUID():'00000000-0000-4000-8000-'+String(Date.now()).padStart(12,'0').slice(-12));localStorage.setItem(DEVICE_KEY,id)}
+    if(!id){id=(window.crypto&&crypto.randomUUID?crypto.randomUUID():'00000000-0000-4000-8000-'+String(Date.now()).padStart(12,'0').slice(-12));localStorage.setItem(DEVICE_KEY,id)}
     return id;
   }
   function perfil(){try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'{}')}catch(e){return {}}}
@@ -60,6 +60,7 @@ window.SUPABASE_CONFIG = {
   }
 
   function instalarBase(){
+    deviceId();
     const nav=document.querySelector('.topo nav');
     if(nav&&!document.getElementById('dxBtnPerfil')){const b=document.createElement('button');b.id='dxBtnPerfil';b.textContent='Identificar aluno';b.onclick=abrirIdentificacao;nav.appendChild(b);const p=document.createElement('button');p.textContent='Painel dos professores';p.onclick=()=>location.href='professor.html';nav.appendChild(p)}
     protegerPainelAluno();substituirConclusao();flush();
