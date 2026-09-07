@@ -1,0 +1,14 @@
+{
+  "name":"Dupla Exclusão — Edição Municipal",
+  "short_name":"Dupla Exclusão",
+  "description":"Álbum digital pedagógico sobre racismo, capacitismo, bullying, inclusão e direitos.",
+  "start_url":"./index.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#07111f",
+  "theme_color":"#14532d",
+  "icons":[
+    {"src":"logo-pedro-queiroz.jpg","sizes":"192x192","type":"image/jpeg","purpose":"any maskable"},
+    {"src":"logo-pedro-queiroz.jpg","sizes":"512x512","type":"image/jpeg","purpose":"any maskable"}
+  ]
+}
