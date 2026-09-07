@@ -1,5 +1,5 @@
 // ============================================================
-// DUPLA EXCLUSÃO — SUPABASE / BOOTSTRAP V13
+// DUPLA EXCLUSÃO — SUPABASE / BOOTSTRAP V20
 // ============================================================
 window.SUPABASE_CONFIG = {
   enabled: true,
@@ -10,7 +10,7 @@ window.SUPABASE_CONFIG = {
   premiosDisponiveis: 10,
   totalFigurinhas: 36,
   projeto: "Álbum Dupla Exclusão — Edição Municipal",
-  versao: 13
+  versao: 20
 };
 
 (function(){
@@ -54,7 +54,7 @@ window.SUPABASE_CONFIG = {
     window.registrarConclusao=function(){
       const nome=document.getElementById('nomeFinal')?.value.trim()||'',escola=document.getElementById('escolaFinal')?.value.trim()||'',turma=document.getElementById('turmaFinal')?.value.trim()||'';if(nome.length<2)return alert('Digite o nome.');salvarPerfil({nome,escola_bairro:escola,turma});
       let ciclo=null;try{ciclo=JSON.parse(localStorage.getItem('dupla_ciclo_v13')||'null')}catch(e){}
-      const item={ciclo_id:ciclo?.id||null,nome,escola_bairro:[escola,turma].filter(Boolean).join(' • '),codigo_confirmacao:estado.codigoConfirmacao,total_figurinhas:36,album_completo:true,premio_entregue:false,device_id:deviceId(),origem:'album-digital-dupla-exclusao-v13'};
+      const item={ciclo_id:ciclo?.id||null,nome,escola_bairro:[escola,turma].filter(Boolean).join(' • '),codigo_confirmacao:estado.codigoConfirmacao,total_figurinhas:36,album_completo:true,premio_entregue:false,device_id:deviceId(),origem:'album-digital-dupla-exclusao-v20'};
       enfileirar('album_concluintes',item);estado.conclusaoRegistrada=true;if(typeof salvar==='function')salvar();modal(`<div class="conclusao"><h2>Conclusão registrada</h2><p><b>Código:</b> ${item.codigo_confirmacao}</p><p>${navigator.onLine?'Sincronização iniciada.':'Registro salvo offline e será sincronizado quando a internet voltar.'}</p></div><button class="btn" onclick="fecharModal()">Fechar</button>`);
     };
   }
@@ -67,12 +67,16 @@ window.SUPABASE_CONFIG = {
   }
 
   function carregarScript(src,id){if(document.getElementById(id))return;const s=document.createElement('script');s.src=src;s.id=id;s.defer=true;document.body.appendChild(s)}
+  function carregarCss(href,id){if(document.getElementById(id))return;const l=document.createElement('link');l.rel='stylesheet';l.href=href;l.id=id;document.head.appendChild(l)}
+
   window.addEventListener('online',flush);
   window.addEventListener('load',function(){
     const path=location.pathname.toLowerCase();
     if(path.endsWith('/professor.html')||path.endsWith('professor.html')){carregarScript('professor-v13.js','dxProfessorV13');return}
+    carregarCss('ux-mobile-fix-v20.css','dxUxV20Css');
     instalarBase();
     carregarScript('simulados-v13.js','dxSimuladosV13');
     carregarScript('dupla-v13.js','dxAlunoV13');
+    carregarScript('ux-mobile-fix-v20.js','dxUxV20Js');
   });
 })();
