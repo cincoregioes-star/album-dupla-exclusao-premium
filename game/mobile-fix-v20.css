@@ -1,0 +1,39 @@
+/* Dupla Exclusão v20 — hotfix mobile do game */
+html,body{min-height:100%;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch}
+body{padding-bottom:88px}
+.pagina{width:min(1320px,100%);padding:68px 10px 32px}
+button,.btn,.booster-btn{min-height:44px;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,211,77,.25)}
+#dx20GameBack{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));z-index:10000;border:0;border-radius:999px;padding:10px 15px;min-height:46px;background:#facc15;color:#111827;font-weight:900;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.modal{overflow-y:auto;align-items:flex-start;padding:10px}
+.modal-box{margin:auto;width:min(480px,100%);max-height:calc(100dvh - 20px);overflow-y:auto;padding:18px 16px 24px}
+.modal-actions{position:sticky;bottom:0;background:#fff;padding:10px 0 0;z-index:5}
+@media(max-width:1100px){
+  .layout{display:flex;flex-direction:column;gap:12px}
+  .centro{order:1;width:100%}
+  .painel-esquerdo{order:2;width:100%}
+  .painel-direito{order:3;width:100%}
+  .tabuleiro{width:min(94vw,640px);height:min(94vw,640px);gap:3px;padding:7px}
+  .acoes-centro{position:sticky;bottom:8px;z-index:40;background:rgba(15,45,107,.92);padding:8px;border-radius:14px;backdrop-filter:blur(6px)}
+}
+@media(max-width:700px){
+  .pagina{padding:64px 8px 28px}
+  .topbar{padding:12px;gap:8px}
+  .topbar h1{font-size:24px}
+  .topbar p{font-size:.86rem}
+  .topbar-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .topbar-actions .btn{width:100%}
+  .centro,.painel{padding:10px;border-radius:16px}
+  .tabuleiro{width:94vw;height:94vw;max-width:560px;max-height:560px}
+  .celula{border-radius:10px}
+  .peca,.cacto,.bloco-vazio{inset:2px;border-radius:10px}
+  .acoes-centro{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:8px}
+  .acoes-centro .btn{width:100%;padding:11px 8px}
+  .booster-btn{grid-template-columns:42px 1fr 34px;padding:10px}
+  .figurinha-box{max-width:420px;margin-left:auto;margin-right:auto}
+}
+@media(max-width:430px){
+  .tabuleiro{width:96vw;height:96vw;margin-left:-2vw}
+  .topbar-actions{grid-template-columns:1fr}
+  .acoes-centro{grid-template-columns:1fr 1fr}
+  .btn{font-size:14px}
+}
