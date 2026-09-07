@@ -7,11 +7,11 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId 'br.com.pedrodequeiroz.duplaexclusao'
+        applicationId 'br.com.pedrodequeiroz.duplaexclusao.limpa'
         minSdk 23
         targetSdk 28
         versionCode 18
-        versionName '1.8'
+        versionName '1.8-clean'
     }
 
     buildTypes {
