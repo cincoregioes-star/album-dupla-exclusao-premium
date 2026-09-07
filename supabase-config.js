@@ -70,6 +70,8 @@ window.SUPABASE_CONFIG = {
   window.addEventListener('load',function(){
     const path=location.pathname.toLowerCase();
     if(path.endsWith('/professor.html')||path.endsWith('professor.html')){carregarScript('professor-v13.js','dxProfessorV13');return}
-    instalarBase();carregarScript('dupla-v13.js','dxAlunoV13');
+    instalarBase();
+    carregarScript('simulados-v13.js','dxSimuladosV13');
+    carregarScript('dupla-v13.js','dxAlunoV13');
   });
 })();
