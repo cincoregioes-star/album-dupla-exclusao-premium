@@ -1,0 +1,79 @@
+name: Build APK v21 RELEASE
+
+on:
+  push:
+    branches: ["apk-v21-stable"]
+    paths:
+      - "android-wrapper/**"
+      - "index.html"
+      - "style.css"
+      - "script.js"
+      - "supabase-config.js"
+      - "dupla-v13.js"
+      - "simulados-v13.js"
+      - "ux-mobile-fix-v20.css"
+      - "ux-mobile-fix-v20.js"
+      - "figurinhas/**"
+      - "audio/**"
+      - "game/**"
+      - ".github/workflows/build-apk-v21-release.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Prepare local web bundle
+        run: |
+          set -e
+          rm -rf android-wrapper/app/src/main/assets/www
+          mkdir -p android-wrapper/app/src/main/assets/www
+          cp index.html style.css script.js supabase-config.js dupla-v13.js simulados-v13.js ux-mobile-fix-v20.css ux-mobile-fix-v20.js android-wrapper/app/src/main/assets/www/
+          cp -r figurinhas audio game android-wrapper/app/src/main/assets/www/
+          if [ -f logo-pedro-queiroz.jpg ]; then cp logo-pedro-queiroz.jpg android-wrapper/app/src/main/assets/www/; fi
+          if [ -f manifest.webmanifest ]; then cp manifest.webmanifest android-wrapper/app/src/main/assets/www/; fi
+
+      - name: JavaScript syntax audit
+        run: |
+          node --check script.js
+          node --check supabase-config.js
+          node --check dupla-v13.js
+          node --check simulados-v13.js
+          node --check ux-mobile-fix-v20.js
+          node --check game/script.js
+          node --check game/game-v13.js
+
+      - name: Build unsigned release APK
+        working-directory: android-wrapper
+        run: gradle :app:assembleRelease
+
+      - name: Locate unsigned APK
+        run: |
+          set -e
+          APK=$(find android-wrapper/app/build/outputs/apk/release -name '*.apk' | head -1)
+          test -n "$APK"
+          cp "$APK" Dupla-Exclusao-v21-RELEASE-UNSIGNED.apk
+
+      - name: Validate APK zip
+        run: unzip -t Dupla-Exclusao-v21-RELEASE-UNSIGNED.apk >/tmp/unzip.txt && tail -1 /tmp/unzip.txt
+
+      - name: Upload unsigned APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Dupla-Exclusao-v21-RELEASE-UNSIGNED
+          path: Dupla-Exclusao-v21-RELEASE-UNSIGNED.apk
+          if-no-files-found: error
