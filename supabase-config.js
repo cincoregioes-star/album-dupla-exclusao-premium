@@ -66,7 +66,11 @@ window.SUPABASE_CONFIG = {
   window.addEventListener('online',flush);
   window.addEventListener('load',function(){
     const path=location.pathname.toLowerCase();
-    if(path.endsWith('/professor.html')||path.endsWith('professor.html')) return;
+    if(path.endsWith('/professor.html')||path.endsWith('professor.html')){
+      carregarScript('professor-v13.js','dxProfessorCoreV23');
+      carregarScript('professor-ui-v23.js','dxProfessorUiV23');
+      return;
+    }
     carregarCss('ux-mobile-fix-v20.css','dxUxV20Css');
     carregarCss('student-ui-v22.css','dxStudentV23Css');
     instalarBase();
