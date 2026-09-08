@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 String url = request.getUrl().toString();
+                String lower = url.toLowerCase();
+                if (lower.contains("professor.html") || lower.contains("tela-admin") || lower.contains("concluintes")) return true;
                 if (url.startsWith(APP_ORIGIN + "/assets/")) return false;
                 if (url.startsWith("https://byajgsbilwiojdowqnlp.supabase.co/")) return false;
                 return true;
