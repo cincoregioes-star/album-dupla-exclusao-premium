@@ -3,6 +3,28 @@
 
   function texto(el){return (el?.textContent||'').trim().toLowerCase()}
 
+  function corrigirCreditos(){
+    const atual=document.querySelector('#tela-projeto .creditos');
+    if(!atual||document.getElementById('dxCreditosV23')) return;
+    const box=document.createElement('section');
+    box.id='dxCreditosV23';
+    box.className='creditos dx-creditos-v23';
+    box.setAttribute('aria-label','Créditos do projeto');
+    box.innerHTML=`
+      <div class="dx-credito-item">
+        <span class="dx-credito-titulo">Idealização e coordenação pedagógica</span>
+        <strong>Prof. Cleilson Paiva</strong>
+        <small>Professor de História • Gestão Escolar</small>
+      </div>
+      <div class="dx-credito-item dx-credito-digital">
+        <span class="dx-credito-titulo">Projeto digital, desenvolvimento do aplicativo e arquitetura da plataforma</span>
+        <strong>Prof. Carlos André Tavares de Lima</strong>
+        <small>Professor de Geografia • Administração Escolar • Criador de Projetos Digitais Educativos</small>
+        <small class="dx-credito-contato">Contato profissional: cincoregioes@gmail.com</small>
+      </div>`;
+    atual.replaceWith(box);
+  }
+
   function removerAcessosProfessor(){
     document.querySelectorAll('button,a').forEach(el=>{
       const t=texto(el);
@@ -71,8 +93,9 @@
   }
 
   function limparUI(){
+    corrigirCreditos();
     removerAcessosProfessor();
-    const obs=new MutationObserver(removerAcessosProfessor);
+    const obs=new MutationObserver(()=>{removerAcessosProfessor();corrigirCreditos()});
     obs.observe(document.body,{subtree:true,childList:true});
     bloquearRotasAdministrativas();
     observarModal();
