@@ -1,5 +1,5 @@
 // ============================================================
-// DUPLA EXCLUSÃO — SUPABASE / BOOTSTRAP V20
+// DUPLA EXCLUSÃO — SUPABASE / BOOTSTRAP V23
 // ============================================================
 window.SUPABASE_CONFIG = {
   enabled: true,
@@ -10,7 +10,7 @@ window.SUPABASE_CONFIG = {
   premiosDisponiveis: 10,
   totalFigurinhas: 36,
   projeto: "Álbum Dupla Exclusão — Edição Municipal",
-  versao: 20
+  versao: 23
 };
 
 (function(){
@@ -36,15 +36,9 @@ window.SUPABASE_CONFIG = {
   function abrirIdentificacao(){
     const p=perfil();
     if(typeof modal!=='function')return;
-    modal(`<div class="ficha-detalhada"><button class="ficha-fechar-x" onclick="fecharModal()">×</button><h2>Identificação do aluno</h2><p>Preencha uma vez. Esses dados servem ao acompanhamento pedagógico; as pesquisas sensíveis da v13 são registradas separadamente sem o nome.</p><div class="form-final"><input id="dxNome" placeholder="Nome do aluno" value="${String(p.nome||'').replace(/"/g,'&quot;')}"><input id="dxEscola" placeholder="Escola" value="${String(p.escola_bairro||'').replace(/"/g,'&quot;')}"><input id="dxTurma" placeholder="Turma / série" value="${String(p.turma||'').replace(/"/g,'&quot;')}"></div><button class="btn" onclick="window.dxSalvarIdentificacao()">Salvar identificação</button></div>`);
+    modal(`<div class="ficha-detalhada"><button class="ficha-fechar-x" onclick="fecharModal()">×</button><h2>Identificação do aluno</h2><p>Preencha uma vez. Esses dados servem ao acompanhamento pedagógico; as pesquisas sensíveis são registradas separadamente sem o nome.</p><div class="form-final"><input id="dxNome" placeholder="Nome do aluno" value="${String(p.nome||'').replace(/"/g,'&quot;')}"><input id="dxEscola" placeholder="Escola" value="${String(p.escola_bairro||'').replace(/"/g,'&quot;')}"><input id="dxTurma" placeholder="Turma / série" value="${String(p.turma||'').replace(/"/g,'&quot;')}"></div><button class="btn" onclick="window.dxSalvarIdentificacao()">Salvar identificação</button></div>`);
   }
   window.dxSalvarIdentificacao=function(){const nome=document.getElementById('dxNome')?.value.trim()||'';if(nome.length<2)return alert('Digite o nome do aluno.');salvarPerfil({nome,escola_bairro:document.getElementById('dxEscola')?.value||'',turma:document.getElementById('dxTurma')?.value||''});if(typeof fecharModal==='function')fecharModal()};
-
-  function protegerPainelAluno(){
-    window.carregarConcluintes=async function(){const area=document.getElementById('listaConcluintes');if(area)area.innerHTML='<div class="quiz-card quiz-card-unico"><h3>Acesso restrito</h3><p>Resultados individuais e concluintes são visualizados apenas pela equipe pedagógica autenticada.</p><button class="btn" onclick="window.location.href=\'professor.html\'">Abrir painel dos professores</button></div>'};
-    window.exportarConcluintes=function(){window.location.href='professor.html'};
-    window.marcarPremio=function(){alert('Esta ação está disponível somente no painel autenticado.')};
-  }
 
   function substituirConclusao(){
     window.telaConclusao=function(){
@@ -54,7 +48,7 @@ window.SUPABASE_CONFIG = {
     window.registrarConclusao=function(){
       const nome=document.getElementById('nomeFinal')?.value.trim()||'',escola=document.getElementById('escolaFinal')?.value.trim()||'',turma=document.getElementById('turmaFinal')?.value.trim()||'';if(nome.length<2)return alert('Digite o nome.');salvarPerfil({nome,escola_bairro:escola,turma});
       let ciclo=null;try{ciclo=JSON.parse(localStorage.getItem('dupla_ciclo_v13')||'null')}catch(e){}
-      const item={ciclo_id:ciclo?.id||null,nome,escola_bairro:[escola,turma].filter(Boolean).join(' • '),codigo_confirmacao:estado.codigoConfirmacao,total_figurinhas:36,album_completo:true,premio_entregue:false,device_id:deviceId(),origem:'album-digital-dupla-exclusao-v20'};
+      const item={ciclo_id:ciclo?.id||null,nome,escola_bairro:[escola,turma].filter(Boolean).join(' • '),codigo_confirmacao:estado.codigoConfirmacao,total_figurinhas:36,album_completo:true,premio_entregue:false,device_id:deviceId(),origem:'album-digital-dupla-exclusao-v23'};
       enfileirar('album_concluintes',item);estado.conclusaoRegistrada=true;if(typeof salvar==='function')salvar();modal(`<div class="conclusao"><h2>Conclusão registrada</h2><p><b>Código:</b> ${item.codigo_confirmacao}</p><p>${navigator.onLine?'Sincronização iniciada.':'Registro salvo offline e será sincronizado quando a internet voltar.'}</p></div><button class="btn" onclick="fecharModal()">Fechar</button>`);
     };
   }
@@ -62,8 +56,8 @@ window.SUPABASE_CONFIG = {
   function instalarBase(){
     deviceId();
     const nav=document.querySelector('.topo nav');
-    if(nav&&!document.getElementById('dxBtnPerfil')){const b=document.createElement('button');b.id='dxBtnPerfil';b.textContent='Identificar aluno';b.onclick=abrirIdentificacao;nav.appendChild(b);const p=document.createElement('button');p.textContent='Painel dos professores';p.onclick=()=>location.href='professor.html';nav.appendChild(p)}
-    protegerPainelAluno();substituirConclusao();flush();
+    if(nav&&!document.getElementById('dxBtnPerfil')){const b=document.createElement('button');b.id='dxBtnPerfil';b.textContent='Identificar aluno';b.onclick=abrirIdentificacao;nav.appendChild(b)}
+    substituirConclusao();flush();
   }
 
   function carregarScript(src,id){if(document.getElementById(id))return;const s=document.createElement('script');s.src=src;s.id=id;s.defer=true;document.body.appendChild(s)}
@@ -72,11 +66,13 @@ window.SUPABASE_CONFIG = {
   window.addEventListener('online',flush);
   window.addEventListener('load',function(){
     const path=location.pathname.toLowerCase();
-    if(path.endsWith('/professor.html')||path.endsWith('professor.html')){carregarScript('professor-v13.js','dxProfessorV13');return}
+    if(path.endsWith('/professor.html')||path.endsWith('professor.html')) return;
     carregarCss('ux-mobile-fix-v20.css','dxUxV20Css');
+    carregarCss('student-ui-v22.css','dxStudentV23Css');
     instalarBase();
     carregarScript('simulados-v13.js','dxSimuladosV13');
     carregarScript('dupla-v13.js','dxAlunoV13');
     carregarScript('ux-mobile-fix-v20.js','dxUxV20Js');
+    carregarScript('student-ui-v22.js','dxStudentV23Js');
   });
 })();
