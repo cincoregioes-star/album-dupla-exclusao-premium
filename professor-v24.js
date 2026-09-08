@@ -1,0 +1,58 @@
+const CFG=window.SUPABASE_CONFIG;
+const SESSION_KEY='dupla_prof_username_session_v24';
+let sessao=null,progresso=[],simulados=[],concluintes=[],ciclos=[],pesquisasTodas=[],atividadesTodas=[],ciclo=null,pesquisas=[],atividades=[];
+
+function h(){return {apikey:CFG.publishableKey,'Content-Type':'application/json'}}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmtData(v){try{return new Date(v).toLocaleString('pt-BR')}catch(e){return ''}}
+async function rpc(nome,body){const r=await fetch(`${CFG.url}/rest/v1/rpc/${nome}`,{method:'POST',headers:h(),body:JSON.stringify(body||{})});if(!r.ok)throw new Error(await r.text());return r.json()}
+
+async function entrar(ev){
+ if(ev)ev.preventDefault();
+ const usuario=document.getElementById('usuario').value.trim(),senha=document.getElementById('senha').value,msg=document.getElementById('loginMsg');
+ msg.textContent='Entrando...';
+ try{
+  const r=await rpc('dupla_login_usuario',{p_usuario:usuario,p_senha:senha});
+  if(!r?.ok)throw new Error(r?.erro||'Usuário ou senha inválidos.');
+  sessao={token:r.token,usuario:r.usuario,nome:r.nome,perfil:r.perfil,expires_at:r.expires_at};
+  localStorage.setItem(SESSION_KEY,JSON.stringify(sessao));document.getElementById('senha').value='';await validarAcesso();
+ }catch(e){msg.textContent=e.message||'Não foi possível entrar.'}
+}
+
+async function validarAcesso(){
+ if(!sessao?.token)throw new Error('Sessão não encontrada.');
+ const snap=await rpc('dupla_painel_snapshot',{p_token:sessao.token});
+ if(!snap?.ok){await sair(false);throw new Error(snap?.erro||'Sessão inválida.');}
+ sessao.nome=snap.nome;sessao.perfil=snap.perfil;localStorage.setItem(SESSION_KEY,JSON.stringify(sessao));
+ document.getElementById('usuarioNome').textContent=snap.nome||'Professor';document.getElementById('usuarioPerfil').textContent=(snap.perfil||'').toUpperCase();
+ document.getElementById('loginCard').classList.add('hidden');document.getElementById('painel').classList.remove('hidden');document.getElementById('loginMsg').textContent='';
+ aplicarSnapshot(snap);
+}
+
+function aplicarSnapshot(snap){
+ progresso=Array.isArray(snap.progresso)?snap.progresso:[];simulados=Array.isArray(snap.simulados)?snap.simulados:[];concluintes=Array.isArray(snap.concluintes)?snap.concluintes:[];ciclos=Array.isArray(snap.ciclos)?snap.ciclos:[];pesquisasTodas=Array.isArray(snap.pesquisas)?snap.pesquisas:[];atividadesTodas=Array.isArray(snap.atividades)?snap.atividades:[];
+ ciclo=ciclos.find(x=>x.ativo)||ciclos[0]||null;pesquisas=ciclo?pesquisasTodas.filter(x=>x.ciclo_id===ciclo.id):[];atividades=ciclo?atividadesTodas.filter(x=>x.ciclo_id===ciclo.id):[];
+ renderMetricas();renderAlunos();renderConcluintes();renderSimulados();renderImpacto();
+}
+async function carregarTudo(){try{const s=await rpc('dupla_painel_snapshot',{p_token:sessao.token});if(!s?.ok)throw new Error(s?.erro||'Sessão inválida.');aplicarSnapshot(s)}catch(e){alert('Erro ao carregar painel: '+e.message)}}
+
+function latestByDevice(){const m=new Map();for(const r of progresso){const k=r.device_id||`${r.nome||''}|${r.turma||''}`;if(!m.has(k))m.set(k,r)}return [...m.values()]}
+function renderMetricas(){const a=latestByDevice(),s=simulados.reduce((x,y)=>x+Number(y.acertos||0),0);document.getElementById('mAlunos').textContent=a.length;document.getElementById('mSimulados').textContent=simulados.length;document.getElementById('mConcluidos').textContent=concluintes.length;document.getElementById('mMedia').textContent=(simulados.length?s/simulados.length:0).toFixed(1).replace('.',',')}
+function renderAlunos(){let rows=latestByDevice();const q=document.getElementById('fBusca').value.toLowerCase(),t=document.getElementById('fTurma').value.toLowerCase(),s=document.getElementById('fSituacao').value;rows=rows.filter(r=>(!q||String(r.nome||'').toLowerCase().includes(q))&&(!t||String(r.turma||'').toLowerCase().includes(t))&&(!s||(s==='completo'?r.album_completo:!r.album_completo)));document.getElementById('tbAlunos').innerHTML=rows.map(r=>`<tr><td><b>${esc(r.nome||'Não identificado')}</b><br><span class="muted">${esc(r.escola_bairro||'')}</span></td><td>${esc(r.turma||'')}</td><td>${Number(r.figurinhas_coladas||0)}/36</td><td>${Number(r.simulados_concluidos||0)}</td><td>${esc(r.ultimo_simulado||'—')}<br><span class="muted">${r.ultimo_acertos==null?'':r.ultimo_acertos+'/10'}</span></td><td><span class="pill ${r.album_completo?'ok':'warn'}">${r.album_completo?'Completo':'Em andamento'}</span></td></tr>`).join('')||'<tr><td colspan="6">Nenhum registro.</td></tr>'}
+function renderConcluintes(){document.getElementById('tbConcluintes').innerHTML=concluintes.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc(r.nome)}</b></td><td>${esc(r.escola_bairro||'')}</td><td>${esc(r.codigo_confirmacao)}</td><td>${fmtData(r.created_at)}</td><td>${r.premio_entregue?'<span class="pill ok">Entregue</span>':`<button class="btn-primary" onclick="marcarPremio('${r.id}')">Marcar entregue</button>`}</td></tr>`).join('')||'<tr><td colspan="6">Nenhum concluinte.</td></tr>'}
+function renderSimulados(){document.getElementById('tbSimulados').innerHTML=simulados.slice(0,300).map(r=>`<tr><td>${esc(r.nome||'Não identificado')}</td><td>${esc(r.turma||'')}</td><td>${esc(r.simulado)}</td><td><b>${r.acertos}/${r.total}</b></td><td>${fmtData(r.created_at)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum resultado.</td></tr>'}
+async function marcarPremio(id){if(!confirm('Confirmar entrega do prêmio?'))return;const r=await rpc('dupla_painel_marcar_premio',{p_token:sessao.token,p_id:id});if(!r?.ok)return alert(r?.erro||'Não foi possível atualizar.');await carregarTudo()}
+
+function medias(tipo){const rows=pesquisas.filter(r=>r.tipo===tipo),keys=['capacitismo','racismo','agir','acessibilidade','direitos'],o={};keys.forEach(k=>{const v=rows.map(r=>Number(r.indicadores?.[k])).filter(n=>n>0);o[k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:0});return o}
+function pct(v){return v?Math.round(v/4*100):0}
+function metodologia(){const rows=pesquisas.filter(r=>r.tipo==='final'),keys=['album','simulados','games','videos','mudanca'],o={};keys.forEach(k=>{const v=rows.map(r=>Number(r.metodologia?.[k])).filter(n=>n>0);o[k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:0});return o}
+function cotidiano(){const rows=pesquisas.filter(r=>r.tipo==='inicial'),keys=['viu_racismo','viu_capacitismo','participou','casa'],o={};keys.forEach(k=>{const v=rows.map(r=>Number(r.respostas?.[k])).filter(n=>n>0);o[k]=v.length?v.reduce((a,b)=>a+b,0)/v.length:0});return o}
+function barra(l,a,b){return `<div class="dxp-row"><b>${l}</b><div><span>Antes ${pct(a)}%</span><i><em style="width:${pct(a)}%"></em></i></div><div><span>Depois ${pct(b)}%</span><i><em style="width:${pct(b)}%"></em></i></div><strong>${b&&a?`${pct(b)-pct(a)>=0?'+':''}${pct(b)-pct(a)} p.p.`:'—'}</strong></div>`}
+function renderImpacto(){const root=document.getElementById('impactoProjeto'),ini=medias('inicial'),fim=medias('final'),met=metodologia(),cot=cotidiano(),cats={};atividades.forEach(a=>cats[a.categoria]=(cats[a.categoria]||0)+1);root.innerHTML=`<div class="dxp-head"><div><span class="pill">Gestão pedagógica</span><h2>Gestão do ciclo e impacto do projeto</h2><p class="muted">Diagnóstico inicial → aprendizagem → gamificação/álbum → diagnóstico final</p></div><button class="btn-ghost" onclick="novoCiclo()">Encerrar ciclo / Novo ciclo</button></div>${ciclo?`<div class="dxp-cycle"><div><b>${esc(ciclo.nome)}</b><span>Pesquisa 2: ${ciclo.pesquisa_final_liberada?'LIBERADA':'BLOQUEADA'}</span></div><button class="${ciclo.pesquisa_final_liberada?'btn-danger':'btn-primary'}" onclick="togglePesquisa()">${ciclo.pesquisa_final_liberada?'Bloquear Pesquisa 2':'Liberar Pesquisa 2'}</button></div>`:'<p>Nenhum ciclo ativo.</p>'}<div class="dxp-metrics"><div><b>${pesquisas.filter(x=>x.tipo==='inicial').length}</b><span>Pesquisas iniciais</span></div><div><b>${pesquisas.filter(x=>x.tipo==='final').length}</b><span>Pesquisas finais</span></div><div><b>${atividades.length}</b><span>Atividades</span></div><div><b>${Object.keys(cats).length}</b><span>Tipos de atividade</span></div></div><h3>Impacto — Antes x Depois</h3>${barra('Reconhece capacitismo',ini.capacitismo,fim.capacitismo)}${barra('Identifica racismo',ini.racismo,fim.racismo)}${barra('Sabe como agir',ini.agir,fim.agir)}${barra('Compreende acessibilidade',ini.acessibilidade,fim.acessibilidade)}${barra('Conhece direitos',ini.direitos,fim.direitos)}<div class="dxp-two"><div><h3>Avaliação da metodologia</h3>${[['Álbum/reflexões',met.album],['Simulados',met.simulados],['Games',met.games],['Vídeos/pílulas',met.videos],['Mudança de percepção',met.mudanca]].map(x=>`<div class="dxp-line"><span>${x[0]}</span><b>${pct(x[1])}%</b></div>`).join('')}</div><div><h3>Cotidiano escolar</h3>${[['Presenciou racismo',cot.viu_racismo],['Presenciou capacitismo',cot.viu_capacitismo],['Participou de atitude ofensiva',cot.participou],['Comentários preconceituosos fora da escola',cot.casa]].map(x=>`<div class="dxp-line"><span>${x[0]}</span><b>${x[1]?x[1].toFixed(1).replace('.',',')+'/4':'—'}</b></div>`).join('')}<small class="muted">Exibição agregada, sem nome do aluno.</small></div></div><div class="dxp-two"><div><h3>Atividades</h3>${Object.entries(cats).map(([k,v])=>`<div class="dxp-line"><span>${esc(k)}</span><b>${v}</b></div>`).join('')||'<p class="muted">Sem atividades ainda.</p>'}</div><div><h3>Exportações</h3><button class="btn-ghost" onclick="csvDownload('dupla-exclusao-pesquisas.csv',pesquisas)">Pesquisas CSV</button><button class="btn-ghost" onclick="csvDownload('dupla-exclusao-atividades.csv',atividades)">Atividades CSV</button></div></div>`}
+async function togglePesquisa(){if(!ciclo)return;const n=!ciclo.pesquisa_final_liberada;if(!confirm(`${n?'Liberar':'Bloquear'} a Pesquisa 2?`))return;const r=await rpc('dupla_painel_pesquisa_final',{p_token:sessao.token,p_ciclo_id:ciclo.id,p_liberada:n});if(!r?.ok)return alert(r?.erro||'Falha ao atualizar.');await carregarTudo()}
+async function novoCiclo(){if(!confirm('Encerrar o ciclo atual e iniciar um novo? O histórico será preservado.'))return;const nome=prompt('Nome do novo ciclo:',`Novo ciclo — ${new Date().toLocaleDateString('pt-BR')}`);if(!nome)return;const r=await rpc('dupla_painel_novo_ciclo',{p_token:sessao.token,p_nome:nome});if(!r?.ok)return alert(r?.erro||'Falha ao criar ciclo.');await carregarTudo()}
+
+function csvDownload(nome,rows){if(!rows.length)return alert('Sem dados para exportar.');const cols=[...new Set(rows.flatMap(r=>Object.keys(r)))],csv=[cols.join(','),...rows.map(r=>cols.map(c=>`"${String(typeof r[c]==='object'?JSON.stringify(r[c]):r[c]??'').replace(/"/g,'""')}"`).join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download=nome;a.click();URL.revokeObjectURL(a.href)}
+function exportarCSV(){csvDownload('dupla-exclusao-alunos.csv',latestByDevice())}
+async function sair(chamar=true){try{if(chamar&&sessao?.token)await rpc('dupla_logout_usuario',{p_token:sessao.token})}catch(e){}localStorage.removeItem(SESSION_KEY);sessao=null;document.getElementById('painel').classList.add('hidden');document.getElementById('loginCard').classList.remove('hidden');document.getElementById('loginMsg').textContent=''}
+(async()=>{try{sessao=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');if(sessao?.token)await validarAcesso()}catch(e){await sair(false)}})();
